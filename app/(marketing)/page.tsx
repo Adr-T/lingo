@@ -29,8 +29,8 @@ export default function Home() {
                         <SignedOut>
                             <SignUpButton
                                 mode="modal"
-                                // afterSignInUrl="/learn"
-                                // afterSignUpUrl="/learn"
+                                afterSignInUrl="/learn"
+                                afterSignUpUrl="/learn"
                             >
                                 <Button
                                     size="lg"
@@ -42,8 +42,8 @@ export default function Home() {
                             </SignUpButton>
                             <SignInButton
                                 mode="modal"
-                                // afterSignInUrl="/learn"
-                                // afterSignUpUrl="/learn"
+                                afterSignInUrl="/learn"
+                                afterSignUpUrl="/learn"
                             >
                                 <Button
                                     size="lg"
