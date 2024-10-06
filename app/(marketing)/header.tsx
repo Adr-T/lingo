@@ -30,7 +30,7 @@ export const Header = () => {
                 </ClerkLoading>
                 <ClerkLoaded>
                     <SignedIn>
-                        <UserButton afterSignOutUrl="/" />
+                        <UserButton /*afterSignOutUrl="/"*/ />
                     </SignedIn>
                     <SignedOut>
                         <SignInButton
