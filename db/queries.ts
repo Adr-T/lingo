@@ -85,3 +85,32 @@ export const getCourseById = cache(async (courseId: number) => {
 
     return data;
 });
+
+export const getCourseProgress = cache(async () => {
+    const { userId } = await auth();
+    const userProgress = await getUserProgress();
+
+    if (!userId || !userProgress?.activeCourseId) {
+        return null;
+    }
+
+    const unitsInAcriveCourse = await db.query.units.findMany({
+        orderBy: (units, { asc }) => [asc(units.order)],
+        where: eq(units.courseId, userProgress.activeCourseId),
+        with: {
+            lessons: {
+                orderBy: (lessons, { asc }) => [asc(lessons.order)],
+                with: {
+                    unit: true,
+                    challenges: {
+                        with: {
+                            challengeProgress: {
+                                where: eq(challengeProgress.userId, userId),
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+});
