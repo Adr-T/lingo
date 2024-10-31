@@ -113,4 +113,20 @@ export const getCourseProgress = cache(async () => {
             },
         },
     });
+
+    const firstUncompletedLesson = unitsInAcriveCourse
+        .flatMap((unit) => unit.lessons)
+        .find((lesson) => {
+            return lesson.challenges.some((challenge) => {
+                return (
+                    !challenge.challengeProgress ||
+                    challenge.challengeProgress.length === 0
+                );
+            });
+        });
+
+    return {
+        activeLesson: firstUncompletedLesson,
+        activeLessonId: firstUncompletedLesson?.id,
+    };
 });
