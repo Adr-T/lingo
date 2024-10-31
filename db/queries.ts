@@ -3,7 +3,14 @@ import { eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 
 import db from "@/db/drizzle";
-import { challengeProgress, courses, units, userProgress } from "@/db/schema";
+import {
+    challengeProgress,
+    challenges,
+    courses,
+    lessons,
+    units,
+    userProgress,
+} from "@/db/schema";
 
 export const getUserProgress = cache(async () => {
     const { userId } = await auth();
@@ -120,7 +127,10 @@ export const getCourseProgress = cache(async () => {
             return lesson.challenges.some((challenge) => {
                 return (
                     !challenge.challengeProgress ||
-                    challenge.challengeProgress.length === 0
+                    challenge.challengeProgress.length === 0 ||
+                    challenge.challengeProgress.some(
+                        (progress) => progress.completed === false
+                    )
                 );
             });
         });
@@ -129,4 +139,50 @@ export const getCourseProgress = cache(async () => {
         activeLesson: firstUncompletedLesson,
         activeLessonId: firstUncompletedLesson?.id,
     };
+});
+
+export const getLesson = cache(async (id?: number) => {
+    const { userId } = await auth();
+
+    if (!userId) {
+        return null;
+    }
+
+    const CourseProgress = await getCourseProgress();
+
+    const lessonId = id || CourseProgress?.activeLessonId;
+
+    if (!lessonId) {
+        return null;
+    }
+
+    const data = await db.query.lessons.findFirst({
+        where: eq(lessons.id, lessonId),
+        with: {
+            challenges: {
+                orderBy: (challenges, { asc }) => [asc(challenges.order)],
+                with: {
+                    challengeOptions: true,
+                    challengeProgress: {
+                        where: eq(challengeProgress.userId, userId),
+                    },
+                },
+            },
+        },
+    });
+
+    if (!data || !data.challenges) {
+        return null;
+    }
+
+    const normalizedChallenges = data.challenges.map((challenge) => {
+        const completed =
+            challenge.challengeProgress &&
+            challenge.challengeProgress.length > 0 &&
+            challenge.challengeProgress.every((progress) => progress.completed);
+
+        return { ...challenge, completed };
+    });
+
+    return { ...data, challenges: normalizedChallenges };
 });
