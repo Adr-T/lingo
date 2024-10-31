@@ -124,6 +124,7 @@ export const getCourseProgress = cache(async () => {
     const firstUncompletedLesson = unitsInAcriveCourse
         .flatMap((unit) => unit.lessons)
         .find((lesson) => {
+            // TODO: if something doesn't work, check the last "if" clause
             return lesson.challenges.some((challenge) => {
                 return (
                     !challenge.challengeProgress ||
@@ -176,6 +177,7 @@ export const getLesson = cache(async (id?: number) => {
     }
 
     const normalizedChallenges = data.challenges.map((challenge) => {
+        // TODO: if something doesn't work, check the last "if" clause
         const completed =
             challenge.challengeProgress &&
             challenge.challengeProgress.length > 0 &&
@@ -185,4 +187,27 @@ export const getLesson = cache(async (id?: number) => {
     });
 
     return { ...data, challenges: normalizedChallenges };
+});
+
+export const getLessonPercentage = cache(async () => {
+    const CourseProgress = await getCourseProgress();
+
+    if (!CourseProgress?.activeLessonId) {
+        return 0;
+    }
+
+    const lesson = await getLesson(CourseProgress.activeLessonId);
+
+    if (!lesson) {
+        return 0;
+    }
+
+    const completedChallenges = lesson.challenges.filter(
+        (challenge) => challenge.completed
+    );
+    const percentage = Math.round(
+        (completedChallenges.length / lesson.challenges.length) * 100
+    );
+
+    return percentage;
 });
