@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { challengeOptions, challenges } from "@/db/schema";
 
+import { Challenge } from "./challenge";
 import { Header } from "./header";
 import { QuestionBubble } from "./question-bubble";
 
@@ -34,7 +35,8 @@ export const Quiz = ({
         return uncompletedIndex === -1 ? 0 : uncompletedIndex;
     });
 
-    const challenge = challenges[activeIndex];
+    const challenge = challenges[activeIndex]; // challenge = current challenge
+    const options = challenge?.challengeOptions ?? [];
 
     const title =
         challenge.type === "ASSIST"
@@ -58,6 +60,14 @@ export const Quiz = ({
                             {challenge.type === "ASSIST" && (
                                 <QuestionBubble question={challenge.question} />
                             )}
+                            <Challenge
+                                options={options}
+                                onSelect={() => {}}
+                                status="none"
+                                selectedOption={undefined}
+                                disabled={false}
+                                type={challenge.type}
+                            />
                         </div>
                     </div>
                 </div>
