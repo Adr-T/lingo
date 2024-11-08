@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import { challengeOptions, challenges } from "@/db/schema";
 
+import { Card } from "./card";
+
 type Props = {
     options: (typeof challengeOptions.$inferSelect)[];
     onSelect: (id: number) => void;
