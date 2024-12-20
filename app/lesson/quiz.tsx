@@ -3,12 +3,13 @@
 import { toast } from "sonner";
 import Image from "next/image";
 import Confetti from "react-confetti";
-import { useAudio, useWindowSize } from "react-use";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useAudio, useWindowSize, useMount } from "react-use";
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "../store/use-hearts-modal";
+import { usePracticeModal } from "../store/use-practice-modal";
 import { challengeOptions, challenges } from "@/db/schema";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
 
@@ -37,6 +38,13 @@ export const Quiz = ({
     userSubscription,
 }: Props) => {
     const { open: openHeartsModal } = useHeartsModal();
+    const { open: openPracticeModal } = usePracticeModal();
+
+    useMount(() => {
+        if (initialPercentage === 100) {
+            openPracticeModal();
+        }
+    });
 
     const { width, height } = useWindowSize();
 
