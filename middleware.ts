@@ -1,6 +1,14 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+// Définition des routes publiques
+const isPublicRoute = createRouteMatcher(["/", "/api/webhooks/stripe"]);
+
+export default clerkMiddleware((auth, req) => {
+    if (isPublicRoute(req)) {
+        return; // Autorise l'accès sans authentification
+    }
+    auth().protect(); // Protège les autres routes
+});
 
 export const config = {
     matcher: [
