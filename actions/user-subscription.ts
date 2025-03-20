@@ -3,10 +3,10 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 import { stripe } from "@/lib/stripe";
-import { absolutUrl } from "@/lib/utils";
+import { absoluteUrl } from "@/lib/utils";
 import { getUserSubscription } from "@/db/queries";
 
-const returnUrl = absolutUrl("/shop"); // http://localhost:3000/shop
+const returnUrl = absoluteUrl("/shop"); // http://localhost:3000/shop
 
 export const createStripeUrl = async () => {
     const { userId } = await auth();
